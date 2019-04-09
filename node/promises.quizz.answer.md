@@ -27,7 +27,7 @@ readFile("./files/demofile.txt", "utf-8").then(
 ```js
 const fs = require("fs");
 const zlib = require("zlib");
-const util = require("util");
+//const util = require("util");
 
 // const readFile = util.promisify(fs.readFile);
 // const gzip = util.promisify(zlib.gzip);
@@ -51,7 +51,7 @@ function readFile(filename, encoding) {
 }
 
 // Starting to look like callback hell?
-readFile("./files/demofile.txt", "utf-8").then(
+readFile("node/files/demofile.txt", "utf-8").then(
   data => {
     gzip(data).then(
       res => console.log(res),
