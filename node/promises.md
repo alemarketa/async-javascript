@@ -184,17 +184,15 @@ prom.then(val => console.log(val)); // <-- Doesn't get passed the result of the 
 We can also pause execution waiting for another promise to resolve
 
 ```js
-Promise.resolve("done")
-  .then(val => {
+Promise.resolve("done").then(
+  val => {
     console.log(val);
 
     return new Promise(resolve => {
       setTimeout(() => resolve("done2"), 1000);
     });
-
-    // The next then waits for this promise to resolve before continueing
-  })
-  .then(val => console.log(val));
+  }).then(
+    val => console.log(val));
 ```
 
 <!-- 🤔🤔🤔🤔🤔 QUIZ 3 🤔🤔🤔🤔🤔 -->

@@ -66,23 +66,93 @@ function readFile(filename, encoding) {
 }
 
 readFile("node/files/demofile.txt", "utf-8").then( 
-  data => {
-    gzip(data).then(
-      res => console.log(res),
-      err => console.error("Failed", err)
-    );
-  }, 
-  err => err => console.error("Failed to Read", err)
-);
+    data => {
+      return gzip(data);
+    }, 
+    err => err => console.error("Failed to Read", err)
+  ).then( 
+    data => {
+      console.log(data);
+    },
+    err => console.error("Failed: ", err)
+  );
 ```
 
 # Question 3
 
 Convert the previous code so that it now chains the promise as well.
 
+```js
+const fs = require("fs");
+const zlib = require("zlib");
+
+function gzip(data) {
+  return new Promise((resolve, reject) => {
+    zlib.gzip(data, (err, result) => {
+      if(err) return reject(err);
+      resolve(result)
+    });
+  });
+}
+
+function readFile(filename, encoding) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filename, encoding, (err, data) => {
+      if (err) reject(err);
+      resolve(data);
+    });
+  });
+}
+
+readFile("node/files/demofile.txt", "utf-8").then( 
+  data => {
+    // needs to return otherviwe the initial data are repeated in the next .then
+    return gzip(data);  
+  },
+  err => console.error('Failed to Read', err)).then(
+      res => {
+        console.log(res);
+      }, 
+      err => console.error("Failed ro Gzip", err)
+    );
+    
+```
+
 # Question 4
 
 Convert the previous code so that it now handles errors using the catch handler
+
+```js
+const fs = require("fs");
+const zlib = require("zlib");
+
+function gzip(data) {
+  return new Promise((resolve, reject) => {
+    zlib.gzip(data, (err, result) => {
+      if(err) return reject(err);
+      resolve(result)
+    });
+  });
+}
+
+function readFile(filename, encoding) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filename, encoding, (err, data) => {
+      if (err) reject(err);
+      resolve(data);
+    });
+  });
+}
+
+readFile("node/files/demofilee.txt", "utf-8").then(data => {
+    return gzip(data);  
+  }).then(res => {
+  console.log(res);
+  }).catch(err => console.error('Some error', err));
+    
+```
+
+
 
 # Question 5
 
