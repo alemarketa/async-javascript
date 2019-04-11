@@ -160,11 +160,21 @@ Create some code that tries to read from disk a file and times out if it takes l
 
 ```js
 function readFileFake(sleep) {
-  return new Promise(resolve => setTimeout(resolve, sleep));
+  return new Promise(resolve => setTimeout(resolve, sleep, "read"))
 }
 
-readFileFake(5000); // This resolves a promise after 5 seconds, pretend it's a large file being read from disk
+function fakeTimeOut(sleep) {
+  return new Promise((_, reject) => setTimeout(reject, sleep, "timeout"))
+}
+ // This resolves a promise after 5 seconds, pretend it's a large file being read from disk
+
+Promise.race([readFileFake(5000), fakeTimeOut(1000)]).then(
+  value => { console.log("Resolved", value)}).catch( 
+  err => {console.log("Rejected", err)})
+
+
 ```
+
 
 # Question 6
 
@@ -185,8 +195,40 @@ function timeout(sleep) {
   return new Promise((resolve, reject) => setTimeout(reject, sleep, "timeout"));
 }
 
-Promise.race( [publish(), timeout(3000)])
-  .then(...)
-  .then(...)
-  .catch(...);
+function correctPublish() {
+  return publish().then( res => {
+    if(res.status === 403) {
+      return authenticate();
+    }
+    return res
+  })
+}
+
+//  fail correctly even with authentication
+Promise.race([correctPublish(), timeout(3000)]).then(res => console.log('Published')).catch(err => {
+  if (err === "timeout") {
+    console.log('Time out')
+  }
+  else {
+    console.log('Error', err)
+  }
+});
+
+
+// takes in account only publish, authenticate can take here x time and it won't time out
+Promise.race([publish(), timeout(1000)]).then( res => { 
+  if( res.status === 403) { 
+    return authenticate()
+  }
+}).then(res => console.log('Published')).catch(err => {
+  if (err === "timeout") {
+    console.log('Time out')
+  }
+  else {
+    console.log('Error', err)
+  }
+});
+
+
+
 ```
