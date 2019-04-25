@@ -7,13 +7,35 @@ const util = require("util");
 const fs = require("fs");
 const readFile = util.promisify(fs.readFile);
 
-const files = ["./files/demofile.txt", "./files/demofile.other.txt"];
+let filesss= ["node/files/demofile.txt", "node/files/demofile.other.txt"];
 
-let promises = files.map(name => readFile(name, { encoding: "utf8" }));
-Promise.all(promises).then(values => {
-  // <-- Uses .all
-  console.log(values);
-});
+
+// read both files simultaneously
+
+  // let promises = files.map(name => readFile(name, { encoding: "utf8" }));
+  // Promise.all(promises).then(values => {
+  //   // <-- Uses .all
+  //   console.log(values);
+  // });
+
+/* answer:
+but read one file and then read the other. Bad performance */
+
+(async () => {
+  for (let file of filesss) {
+    let value = await readFile(file,"utf8")
+    console.log(value)
+  }
+})()
+
+/* better answer, combining await/async and Promises */
+
+(async () => {
+    let promises = filesss.map(name => readFile(name, "utf8"))
+    let values = await Promise.all(promises)
+    console.log(values)
+})()
+
 ```
 
 # Question 2

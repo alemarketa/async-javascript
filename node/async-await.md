@@ -143,8 +143,8 @@ It's a subtle difference, but now you can iterate over iterators that return pro
   const fs = require("fs");
   const readFile = util.promisify(fs.readFile);
 
-  const files = ["./files/demofile.txt", "./files/demofile.other.txt"];
-  const promises = files.map(name => readFile(name, "utf8"));
+  const filesNode = ["node/files/demofile.txt", "node/files/demofile.other.txt"];
+  const promises = filesNode.map(name => readFile(name, "utf8"));
   for await (let content of promises) {
     //<-- See the await is on the for
     console.log(content);
@@ -193,6 +193,7 @@ const customAsyncIterator = () => ({
   [Symbol.asyncIterator]: () => ({
     x: 0,
     next() {
+      let y = this.x++;
       if (this.x > 100) {
         return Promise.resolve({
           done: true,
@@ -200,7 +201,7 @@ const customAsyncIterator = () => ({
         });
       }
 
-      let y = this.x++;
+      //let y = this.x++;
 
       return Promise.resolve({
         done: false,
